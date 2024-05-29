@@ -1,4 +1,4 @@
-let hp_base = 150
+let hp_base = 150 //HP基本値
 let jiki={x:200,y:320,hp:100,size:24}
 let obake={x:200,y:100,buf_x:0,hp:hp_base,size:60,mode:0}
 let tama=[]
@@ -24,9 +24,9 @@ function draw() {
   }
   fill(255)
   count += 1
-  jiki_move()
+  jiki_move() //自機の移動の処理
   circle(jiki.x-jiki.size/2,jiki.y-jiki.size/2,jiki.size)
-  teki_move()
+  teki_move() //敵の移動の処理
   textSize(obake.size)
   text("👻",obake.x-obake.size/2,obake.y-obake.size/2)
   attack()
@@ -49,7 +49,7 @@ function draw() {
   text(count,350,25)
   
 }
-function jiki_move(){
+function jiki_move(){ //自機の移動の処理
   if (keyIsDown(LEFT_ARROW)) {
     jiki.x -= 5;
   }
@@ -62,13 +62,13 @@ function jiki_move(){
   if (keyIsDown(DOWN_ARROW)) {
     jiki.y += 5;
   }
-  if(keyIsDown(32) && fire<0){
+  if(keyIsDown(32) && fire<0){ //スペースキーを押している時は弾を撃つ
     tama.push({x:jiki.x-jiki.size/2,y:jiki.y-jiki.size/2})
-    fire = 10
+    fire = 10 //弾のクールダウンのセット
   }
 }
-function teki_move(){
-  if(Math.abs(obake.buf_x)<3){
+function teki_move(){ //敵の動きの処理
+  if(Math.abs(obake.buf_x)<3){ //おばけの移動予約buf_xが3未満なら再セット
     let d = (Math.floor(Math.random()*3)+1)*40+80
     if(obake.x>=200){
       obake.buf_x = d
@@ -85,7 +85,7 @@ function teki_move(){
   }
   let tobj={x:obake.x+obake.size/2,y:obake.y}
   if(count>180){
-    if(obake.mode==0){
+    if(obake.mode==0){ //おばけ第1段階
       if(count%30==0){
         tobj.size=10
         tobj.sp=3
@@ -97,14 +97,14 @@ function teki_move(){
         tobj = straight(tobj)
         tekitama.push(tobj)
       }
-    } else if(obake.mode==1){
+    } else if(obake.mode==1){ //おばけ第2段階
       if(count%20==0){
         tobj.size=30
         tobj.sp=3
         tobj = follow(tobj)
         tekitama.push(tobj)
       }
-    } else if(obake.mode==2){
+    } else if(obake.mode==2){ //おばけ第3段階
       if(count%15==0){
         let tobj2={}
         tobj2.x=start
@@ -130,14 +130,14 @@ function teki_move(){
     }
   }
   let half = jiki.size/2
-  tekitama.forEach(t=>{
+  tekitama.forEach(t=>{ //敵の弾の移動と当たり判定
     t.y += t.sp
     t.x += (t.dx/t.dy)*t.sp
     fill(255)
     circle(t.x-t.size/2,t.y-t.size/2,t.size)
     if(Math.abs(t.x+t.size/2-jiki.x-half)<half && Math.abs(t.y+t.size/2-jiki.y-half)<half){
       jiki.hp -= 1
-      if(jiki.hp<=0){
+      if(jiki.hp<=0){ //自分のHPが0になったらゲームオーバー
         state = "gameover"
       }
       fill(255,0,0)
@@ -147,7 +147,7 @@ function teki_move(){
 }
 
 
-function attack(){
+function attack(){ //自機の弾の移動、当たり判定処理
   let half = obake.size/2
   tama.forEach(t=>{
     t.y-=5
@@ -160,33 +160,33 @@ function attack(){
       text("hit!",20,50)
     }
     if(obake.hp<=0){
-      if(obake.mode==2){
+      if(obake.mode==2){ //第3段階を倒した時
         state = "win"
-      } else {
+      } else { //第1,2段階
         obake.mode+=1
         obake.hp = hp_base
       }
     }
   })
 }
-function follow(tama){
+function follow(tama){ //自機を狙う弾
   tama.dx = jiki.x+jiki.size/2-obake.x-obake.size/2
   tama.dy = jiki.y+jiki.size/2-obake.y-obake.size/2
   return tama
 }
-function straight(tama){
+function straight(tama){ //真下に飛ぶ弾
   tama.dx = 0
   tama.dy = 1
   return tama
 }
-function win(){
+function win(){ //ゲームクリア表示
   fill(0)
   textSize(30)
   text("GAME CLEAR!!",90,80)
   textSize(20)
   text("Time: "+count,140,130)
 }
-function gameover(){
+function gameover(){ //ゲームオーバー表示
   fill(0)
   textSize(30)
   text("GAME OVER",100,80)
