@@ -15,7 +15,7 @@ function draw() {
   background(220);
   strokeWeight(2);
   if(winner!=-1){
-    drawResult()
+    drawResult() //ゲーム結果表示
   } else {
     fill(color(bw*255))
     circle(52,312,25)
@@ -23,8 +23,8 @@ function draw() {
     fill(0)
     text("の番です",70,320)
   }
-  draw_cell()
-  for(let i=0;i<9;i++){
+  draw_cell() //石の表示
+  for(let i=0;i<9;i++){ //枠線の表示
     line(50,30+30*i,290,30+30*i)
     line(50+30*i,30,50+30*i,270)
   }
@@ -36,7 +36,7 @@ function draw() {
   }
 }
 
-function draw_cell(){
+function draw_cell(){ //石の表示
   cell.forEach(function(e){
     fill(color(e.color*255))
     circle(65+30*e.x,45+30*e.y,25)
@@ -48,20 +48,20 @@ function mousePressed(){
   if(winner!=-1) return false
   let mx = Math.floor((mouseX-50)/30)
   let my = Math.floor((mouseY-30)/30)
-  if(!checkPlace(mx,my,bw)){
+  if(!checkPlace(mx,my,bw)){ //石を置けない場所をクリックした時
     count = 30
     return false
   }
-  get_memo.forEach(c=>{
+  get_memo.forEach(c=>{ //石をひっくり返す
     c.color=1-c.color
   })
   get_memo = []
-  cell.push({"x":mx,"y":my,"color":bw})
+  cell.push({"x":mx,"y":my,"color":bw}) //石を追加
   bw = 1 - bw
-  num0 = cell.filter(c=>c.color==0).length
-  num1 = cell.filter(c=>c.color==1).length
-  checkPass()
-  if(cell.length==64){
+  num0 = cell.filter(c=>c.color==0).length //黒の石の数を更新
+  num1 = cell.filter(c=>c.color==1).length //白の石の数を更新
+  checkPass() //パスが発生するかチェック
+  if(cell.length==64){ //ゲーム終了チェック
     if(num0>num1){
       winner=0
     } else if(num1>num0){
@@ -72,21 +72,21 @@ function mousePressed(){
   }
 }
 
-function checkPlace(mx,my,bw){
-  if(mx > 7 || my > 7 || mx < 0 || my < 0){
+function checkPlace(mx,my,bw){ //石が置けるかをチェック
+  if(mx > 7 || my > 7 || mx < 0 || my < 0){ //枠外
     return false
   }
-  if(cell.find(c => c.x==mx && c.y==my)){
+  if(cell.find(c => c.x==mx && c.y==my)){ //既に石が置いてある場合
     return false
   }
-  for(let i=0;i<8;i++){
+  for(let i=0;i<8;i++){ //8方向に石があるかチェック
     checkDirection(mx,my,i)
   }
-  if(get_memo.length>0){
+  if(get_memo.length>0){ //ひっくり返せる石があればそこに石を置けるのでOK
     return true
   }
 }
-function checkDirection(mx,my,i){
+function checkDirection(mx,my,i){ //8方向に石があるかチェック
   const d = [
     [1,0],[1,-1],[0,-1],[-1,-1],
     [-1,0],[-1,1],[0,1],[1,1]
@@ -94,16 +94,16 @@ function checkDirection(mx,my,i){
   let r = ""
   const dx = mx+d[i][0]
   const dy = my+d[i][1]
-  const ncell = cell.find(c=>c.x==dx&&c.y==dy)
+  const ncell = cell.find(c=>c.x==dx&&c.y==dy) //指定された方向にある石
   if(ncell && ncell.color!=bw){
     ncell.d=i
-    get_memo.push(ncell)
-    checkDirection(dx,dy,i)
+    get_memo.push(ncell) //相手の石ならひっくり返す候補になる
+    checkDirection(dx,dy,i) //自分を呼び出す
   } else if(!ncell){
-    get_memo=get_memo.filter(c=>c.d!=i)
+    get_memo=get_memo.filter(c=>c.d!=i) //自分の石が無ければひっくり返す候補を消す
   }
 }
-function checkPass(){
+function checkPass(){ //置ける場所が無ければパス
   let c = 0
   for(let i=0;i<8;i++){
     for(let j=0;j<8;j++){
@@ -116,7 +116,7 @@ function checkPass(){
     bw = 1-bw
   }
 }
-function drawResult(){
+function drawResult(){ //ゲーム結果表示
   textSize(30)
   fill(0)
   if(winner!=2){
